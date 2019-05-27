@@ -76,6 +76,7 @@ theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
 theme.widget_task                               = theme.dir .. "/icons/task.png"
 theme.widget_scissors                           = theme.dir .. "/icons/scissors.png"
+theme.widget_phones                           = theme.dir .. "/icons/phones.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = 0
@@ -101,6 +102,9 @@ theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/
 local markup = lain.util.markup
 local separators = lain.util.separators
 
+-- Textclock
+local mytextclock = wibox.widget.textclock(" %H:%M ")
+mytextclock.font = theme.font
 -- Binary clock
 local binclock = require("themes.powerarrow.binclock"){
     height = dpi(32),
@@ -112,7 +116,7 @@ local binclock = require("themes.powerarrow.binclock"){
 -- Calendar
 theme.cal = lain.widget.cal({
     --cal = "cal --color=always",
-    attach_to = { binclock.widget },
+    attach_to = { mytextclock },
     notification_preset = {
         font = "xos4 Terminus 10",
         fg   = theme.fg_normal,
@@ -193,6 +197,27 @@ theme.mpd = lain.widget.mpd({
     end
 })
 
+-- Pulsebar
+local phoneicon = wibox.widget.imagebox(theme.widget_phones)
+local volume = lain.widget.pulsebar()
+volume.bar:buttons(awful.util.table.join(
+    awful.button({}, 1, function() -- left click
+        awful.spawn("pavucontrol")
+    end),
+    awful.button({}, 3, function() -- right click
+        os.execute(string.format("pactl set-sink-mute %d toggle", volume.device))
+        volume.update()
+    end),
+    awful.button({}, 4, function() -- scroll up
+        os.execute(string.format("pactl set-sink-volume %d +1%%", volume.device))
+        volume.update()
+    end),
+    awful.button({}, 5, function() -- scroll down
+        os.execute(string.format("pactl set-sink-volume %d -1%%", volume.device))
+        volume.update()
+    end)
+))
+
 -- MEM
 local memicon = wibox.widget.imagebox(theme.widget_mem)
 local mem = lain.widget.mem({
@@ -271,6 +296,19 @@ local net = lain.widget.net({
         widget:set_markup(markup.fontfg(theme.font, "#FEFEFE", " " .. net_now.received .. " ↓↑ " .. net_now.sent .. " "))
     end
 })
+
+-- Redshift
+myredshift = wibox.widget.textbox()
+lain.widget.contrib.redshift:attach(
+    myredshift,
+    function (active)
+        if active then
+            myredshift:set_text("RS on")
+        else
+            myredshift:set_text("RS off")
+        end
+    end
+)
 
 -- Brigtness
 local brighticon = wibox.widget.imagebox(theme.widget_brightness)
@@ -377,6 +415,8 @@ function theme.at_screen_connect(s)
             arrow(theme.bg_normal, "#343434"),
             wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), "#343434"),
             arrow("#343434", "#777E76"),
+            wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volume.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
+            arrow("#777E76", "#4B696D"),
             wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
             arrow("#777E76", "#4B696D"),
             wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), "#4B696D"),
@@ -389,7 +429,11 @@ function theme.at_screen_connect(s)
             arrow("#8DAA9A", "#C0C0A2"),
             wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
             arrow("#C0C0A2", "#777E76"),
-            wibox.container.background(wibox.container.margin(binclock.widget, dpi(4), dpi(8)), "#777E76"),
+            wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
+            arrow("#C0C0A2", "#777E76"),
+            wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
+            arrow("#C0C0A2", "#777E76"),
+            wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), "#777E76"),
             arrow("#777E76", "alpha"),
             --]]
             s.mylayoutbox,
