@@ -99,6 +99,8 @@ theme.titlebar_maximized_button_normal_active   = theme.dir .. "/icons/titlebar/
 theme.titlebar_maximized_button_focus_inactive  = theme.dir .. "/icons/titlebar/maximized_focus_inactive.png"
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
 
+local color = {"#92A6DE","#BF7DBE","#783DD9","#7B0288","#331188","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
+
 local markup = lain.util.markup
 local separators = lain.util.separators
 
@@ -199,24 +201,31 @@ theme.mpd = lain.widget.mpd({
 
 -- Pulsebar
 local phoneicon = wibox.widget.imagebox(theme.widget_phones)
-local volume = lain.widget.pulsebar()
-volume.bar:buttons(awful.util.table.join(
+theme.volume = lain.widget.pulsebar({
+    ticks = true, width = dpi(67),
+    notification_preset = { font = theme.font }
+})
+theme.volume.tooltip.wibox.fg = theme.fg_focus
+theme.volume.tooltip.wibox.font = theme.font
+theme.volume.bar:buttons(awful.util.table.join(
     awful.button({}, 1, function() -- left click
         awful.spawn("pavucontrol")
     end),
     awful.button({}, 3, function() -- right click
-        os.execute(string.format("pactl set-sink-mute %d toggle", volume.device))
-        volume.update()
+        os.execute(string.format("pactl set-sink-mute %d toggle", theme.volume.device))
+        theme.volume.update()
     end),
     awful.button({}, 4, function() -- scroll up
-        os.execute(string.format("pactl set-sink-volume %d +1%%", volume.device))
-        volume.update()
+        os.execute(string.format("pactl set-sink-volume %d +1%%", theme.volume.device))
+        theme.volume.update()
     end),
     awful.button({}, 5, function() -- scroll down
-        os.execute(string.format("pactl set-sink-volume %d -1%%", volume.device))
-        volume.update()
+        os.execute(string.format("pactl set-sink-volume %d -1%%", theme.volume.device))
+        theme.volume.update()
     end)
 ))
+local volumebg = wibox.container.background(theme.volume.bar, "#585858", gears.shape.rectangle)
+local volumewidget = wibox.container.margin(volumebg, dpi(7), dpi(7), dpi(5), dpi(5))
 
 -- MEM
 local memicon = wibox.widget.imagebox(theme.widget_mem)
@@ -412,29 +421,29 @@ function theme.at_screen_connect(s)
             wibox.container.background(wibox.container.margin(wibox.widget { mailicon, theme.mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(7)), "#343434"),
             arrow("#343434", theme.bg_normal),
             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
-            arrow(theme.bg_normal, "#343434"),
-            wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), "#343434"),
-            arrow("#343434", "#777E76"),
-            wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volume.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
-            arrow("#777E76", "#4B696D"),
-            wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
-            arrow("#777E76", "#4B696D"),
-            wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), "#4B696D"),
-            arrow("#4B696D", "#4B3B51"),
-            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), "#4B3B51"),
-            arrow("#4B3B51", "#CB755B"),
-            wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
-            arrow("#CB755B", "#8DAA9A"),
-            wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#8DAA9A"),
-            arrow("#8DAA9A", "#C0C0A2"),
-            wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
-            arrow("#C0C0A2", "#777E76"),
-            wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
-            arrow("#C0C0A2", "#777E76"),
-            wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#C0C0A2"),
-            arrow("#C0C0A2", "#777E76"),
-            wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), "#777E76"),
-            arrow("#777E76", "alpha"),
+            arrow(theme.bg_normal, color[1]),
+            wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), color[1]),
+            arrow(color[1], color[2]),
+            wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volumewidget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), color[2]),
+            arrow(color[2], color[3]),
+            wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), color[3]),
+            arrow(color[3], color[4]),
+            wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), color[4]),
+            arrow(color[4], color[5]),
+            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), color[5]),
+            arrow(color[5], color[6]),
+            wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[6]),
+            arrow(color[6], color[7]),
+            wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[7]),
+            arrow(color[7], color[8]),
+            wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[8]),
+            arrow(color[8], color[9]),
+            wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[9]),
+            arrow(color[9], color[10]),
+            wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[10]),
+            arrow(color[10], color[11]),
+            wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), color[11]),
+            arrow(color[11], "alpha"),
             --]]
             s.mylayoutbox,
         },
