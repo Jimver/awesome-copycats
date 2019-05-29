@@ -221,15 +221,8 @@ awful.util.mymainmenu = freedesktop.menu.build({
 -- {{{ Screen
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", function(s)
-    -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
+    -- Refresh wallpaper
+    refresh_screen_wallpaper(s)
 end)
 
 -- No borders when rearranging only 1 non-floating or maximized client
@@ -825,17 +818,29 @@ function wp_selected()
     return select_fisher_yates(scandir(path),num_files,screen.count())
 end
 
+function refresh_screen_wallpaper(s)
+    screen_index = s.index
+    -- 	Set wallpaper on first tab (else it would be empty at start up)
+    gears.wallpaper.maximized(path .. wp_selected()[screen_index], screen_index)
+end
+
+function refresh_wallpapers()
+    -- For each screen
+    for s in screen do
+        refresh_screen_wallpaper(s)
+    end
+end
+
+-- Initial set
+awful.screen.connect_for_each_screen(function(s)
+    -- do something
+    refresh_screen_wallpaper(s)
+end)
+
 gears.timer {
     timeout   = interval * 60,
     call_now  = true,
     autostart = true,
-    callback  = function()
-        -- For each screen
-        for s in screen do
-            screen_index = s.index
-            -- 	Set wallpaper on first tab (else it would be empty at start up)
-            gears.wallpaper.maximized(path .. wp_selected()[screen_index], screen_index)
-        end
-    end
+    callback  = refresh_wallpapers
 }
 -- }}}
