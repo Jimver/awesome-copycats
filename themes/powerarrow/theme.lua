@@ -221,16 +221,19 @@ theme.volume.bar:buttons(awful.util.table.join(
         awful.spawn("pavucontrol")
     end),
     awful.button({}, 3, function() -- right click
-        os.execute(string.format("pactl set-sink-mute %d toggle", theme.volume.device))
-        theme.volume.update()
+        awful.spawn.easy_async(string.format("pactl set-sink-mute %d toggle", theme.volume.device), function() 
+            theme.volume.update()
+        end)
     end),
     awful.button({}, 4, function() -- scroll up
-        os.execute(string.format("pactl set-sink-volume %d +1%%", theme.volume.device))
-        theme.volume.update()
+        awful.spawn.easy_async(string.format("pactl set-sink-volume %d +1%%", theme.volume.device), function() 
+            theme.volume.update()
+        end)
     end),
     awful.button({}, 5, function() -- scroll down
-        os.execute(string.format("pactl set-sink-volume %d -1%%", theme.volume.device))
-        theme.volume.update()
+        awful.spawn.easy_async(string.format("pactl set-sink-volume %d -1%%", theme.volume.device), function() 
+            theme.volume.update()
+        end)
     end)
 ))
 local volumebg = wibox.container.background(theme.volume.bar, "#585858", gears.shape.rectangle)
@@ -340,10 +343,10 @@ local brightwidget = awful.widget.watch('light -G', 0.1,
 end)
 brightwidget:buttons(awful.util.table.join(
     awful.button({}, 4, function() -- scroll up
-        os.execute("light -A 5")
+        awful.spawn("light -A 5")
     end),
     awful.button({}, 5, function() -- scroll down
-        os.execute("light -U 5")
+        awful.spawn("light -U 5")
     end)
 ))
 

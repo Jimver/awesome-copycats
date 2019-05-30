@@ -361,7 +361,7 @@ globalkeys = my_table.join(
             {description = "rofi launcher", group = "launcher"}),
 
     -- X screen locker
-    awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
+    awful.key({ altkey, "Control" }, "l", function () awful.spawn(scrlocker) end,
             {description = "lock screen", group = "hotkeys"}),
 
     -- Hotkeys
@@ -521,27 +521,24 @@ globalkeys = my_table.join(
             {description = "show weather", group = "widgets"}),
 
     -- Brightness
-    awful.key({ }, "XF86MonBrightnessUp", function () os.execute("") end,
+    awful.key({ }, "XF86MonBrightnessUp", function () end,
             {description = "+5%", group = "hotkeys"}),
-    awful.key({ }, "XF86MonBrightnessDown", function () os.execute("") end,
+    awful.key({ }, "XF86MonBrightnessDown", function () end,
             {description = "-5%", group = "hotkeys"}),
 
-    -- ALSA volume control
+    -- Volume control
     awful.key({  }, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("", beautiful.volume.channel))
             beautiful.volume.update()
         end,
         {description = "volume up", group = "hotkeys"}),
     awful.key({  }, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("", beautiful.volume.channel))
             beautiful.volume.update()
         end,
         {description = "volume down", group = "hotkeys"}),
     awful.key({  }, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("", beautiful.volume.togglechannel or beautiful.volume.channel))
             beautiful.volume.update()
         end,
         {description = "toggle mute", group = "hotkeys"}),
@@ -549,26 +546,22 @@ globalkeys = my_table.join(
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
         function ()
-            os.execute("mpc toggle")
-            beautiful.mpd.update()
+            awful.spawn.easy_async("mpc toggle", function() beautiful.mpd.update() end)
         end,
         {description = "mpc toggle", group = "widgets"}),
     awful.key({ altkey, "Control" }, "Down",
         function ()
-            os.execute("mpc stop")
-            beautiful.mpd.update()
+            awful.spawn.easy_async("mpc stop", function() beautiful.mpd.update() end)
         end,
         {description = "mpc stop", group = "widgets"}),
     awful.key({ altkey, "Control" }, "Left",
         function ()
-            os.execute("mpc prev")
-            beautiful.mpd.update()
+            awful.spawn.easy_async("mpc prev", function() beautiful.mpd.update() end)
         end,
         {description = "mpc prev", group = "widgets"}),
     awful.key({ altkey, "Control" }, "Right",
         function ()
-            os.execute("mpc next")
-            beautiful.mpd.update()
+            awful.spawn.easy_async("mpc next", function() beautiful.mpd.update() end)
         end,
         {description = "mpc next", group = "widgets"}),
     awful.key({ altkey }, "0",
