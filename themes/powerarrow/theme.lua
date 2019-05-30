@@ -9,6 +9,7 @@ local gears = require("gears")
 local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
+local beautiful = require("beautiful")
 local dpi   = require("beautiful.xresources").apply_dpi
 
 local math, string, os = math, string, os
@@ -19,17 +20,17 @@ theme.dir                                       = os.getenv("HOME") .. "/.config
 theme.wallpaper                                 = theme.dir .. "/wall.png"
 theme.font                                      = "Roboto 9"
 theme.fg_normal                                 = "#FEFEFE"
-theme.fg_focus                                  = "#32D6FF"
+theme.fg_focus                                  = "#ff47ca"
 theme.fg_urgent                                 = "#C83F11"
-theme.bg_normal                                 = "#222222"
+theme.bg_normal                                 = "#222222"  .. "CC"
 theme.bg_focus                                  = "#1E2320"
 theme.bg_urgent                                 = "#3F3F3F"
-theme.taglist_fg_focus                          = "#00CCFF"
+theme.taglist_fg_focus                          = theme.fg_focus
 theme.tasklist_bg_focus                         = "#222222"
-theme.tasklist_fg_focus                         = "#00CCFF"
+theme.tasklist_fg_focus                         = theme.fg_focus
 theme.border_width                              = dpi(2)
 theme.border_normal                             = "#3F3F3F"
-theme.border_focus                              = "#6F6F6F"
+theme.border_focus                              = "#8d5a97"
 theme.border_marked                             = "#CC9393"
 theme.titlebar_bg_focus                         = "#3F3F3F"
 theme.titlebar_bg_normal                        = "#3F3F3F"
@@ -99,7 +100,9 @@ theme.titlebar_maximized_button_normal_active   = theme.dir .. "/icons/titlebar/
 theme.titlebar_maximized_button_focus_inactive  = theme.dir .. "/icons/titlebar/maximized_focus_inactive.png"
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
 
-local color = {"#92A6DE","#BF7DBE","#783DD9","#7B0288","#331188","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
+beautiful.bg_systray = theme.bg_normal
+
+local color = {"#BF7DBE","#783DD9","#7B0288","#331188","#92A6DE","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
 
 local markup = lain.util.markup
 local separators = lain.util.separators

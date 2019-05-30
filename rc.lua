@@ -249,6 +249,102 @@ root.buttons(my_table.join(
     awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
+    
+-- {{{ Wallpapers per screen
+-- This section sets random wallpapers from a folder
+-- Set according to wallpaper directory
+local path = os.getenv("HOME") .."/.wallpaper/Custom/"
+-- Set to number of used tags
+local num_tabs = #awful.util.tagnames
+-- Interval to change wallpapers (in minutes)
+local interval = 10
+-- Other variables
+local num_files = 0
+local wp_all = {}
+local wp_selected = {}
+math.randomseed(os.time());
+-- To guarantee unique random numbers on every platform, pop a few
+for i = 1,10 do
+    math.random()
+end
+-- 
+-- LUA implementation of PHP scan dir
+-- Returns all files (except . and ..) in "directory"
+function scandir(directory)
+    num_files, t, popen = 0, {}, io.popen
+    for filename in popen('ls -a "'..directory..'"'):lines() do
+        -- If case to disregard "." and ".."
+        if(not(filename == "." or filename == "..")) then
+            num_files = num_files + 1
+            t[num_files] = filename
+        end
+    end
+    return t
+end
+
+-- Quick clone method
+function table.clone(org)
+    return {table.unpack(org)}
+end
+
+-- Basically a modern Fisher-Yates shuffle
+-- Returns "tabs" elements from an table "wp" of length "files_num"
+-- Guarantees no duplicated elements in the return while having linear runtime 
+function select_fisher_yates(wp,files_num,tabs)
+    wp_orig = table.clone(wp)
+    local selected = {}
+    for i=1,tabs do
+        position = math.random(1,files_num)
+        -- Assign image to selected
+        selected[i] = wp[position]
+        -- Put last entry in the selected position
+        wp[position] = wp[files_num]
+        files_num = files_num - 1
+        if(files_num == 0) then
+            break
+        end
+    end
+    if not(#selected == tabs) then
+        num_left = tabs - #selected
+        subresult = select_fisher_yates(wp_orig, files_num, num_left)
+        for _, sub_v in pairs(subresult) do
+            table.insert(selected, sub_v)
+        end
+    end
+    return selected
+end
+
+-- Get the names of #screen files from "num_files" total files in "path"
+function wp_selected()
+    return select_fisher_yates(scandir(path),num_files,screen.count())
+end
+
+function refresh_screen_wallpaper(s)
+    screen_index = s.index
+    -- 	Set wallpaper on first tab (else it would be empty at start up)
+    gears.wallpaper.maximized(path .. wp_selected()[screen_index], screen_index)
+end
+
+function refresh_wallpapers()
+    -- For each screen
+    for s in screen do
+        refresh_screen_wallpaper(s)
+    end
+end
+
+-- Initial set
+awful.screen.connect_for_each_screen(function(s)
+    -- do something
+    refresh_screen_wallpaper(s)
+end)
+
+gears.timer {
+    timeout   = interval * 60,
+    call_now  = true,
+    autostart = true,
+    callback  = refresh_wallpapers
+}
+-- }}}
 
 -- {{{ Key bindings
 globalkeys = my_table.join(
@@ -256,6 +352,10 @@ globalkeys = my_table.join(
     -- https://github.com/lcpz/dots/blob/master/bin/screenshot
 --     awful.key({ altkey }, "p", function() os.execute("screenshot") end,
 --               {description = "take a screenshot", group = "hotkeys"}),
+    -- Refresh wallpapers
+    awful.key({ modkey}, "t", refresh_wallpapers, 
+            {description = "refresh wallpapers", group = "screen"}),
+    
     -- Rofi menu
     awful.key({ modkey}, "d", function() awful.spawn.with_shell("rofi -show combi") end, 
             {description = "rofi launcher", group = "launcher"}),
@@ -749,100 +849,4 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 -- possible workaround for tag preservation when switching back to default screen:
 -- https://github.com/lcpz/awesome-copycats/issues/251
--- }}}
-
--- {{{ Tag Wallpaper
--- This section sets random wallpapers from a folder
--- Set according to wallpaper directory
-local path = os.getenv("HOME") .."/.wallpaper/Custom/"
--- Set to number of used tags
-local num_tabs = #awful.util.tagnames
--- Interval to change wallpapers (in minutes)
-local interval = 10
--- Other variables
-local num_files = 0
-local wp_all = {}
-local wp_selected = {}
-math.randomseed(os.time());
--- To guarantee unique random numbers on every platform, pop a few
-for i = 1,10 do
-    math.random()
-end
--- 
--- LUA implementation of PHP scan dir
--- Returns all files (except . and ..) in "directory"
-function scandir(directory)
-    num_files, t, popen = 0, {}, io.popen
-    for filename in popen('ls -a "'..directory..'"'):lines() do
-        -- If case to disregard "." and ".."
-        if(not(filename == "." or filename == "..")) then
-            num_files = num_files + 1
-            t[num_files] = filename
-        end
-    end
-    return t
-end
-
--- Quick clone method
-function table.clone(org)
-    return {table.unpack(org)}
-end
-
--- Basically a modern Fisher-Yates shuffle
--- Returns "tabs" elements from an table "wp" of length "files_num"
--- Guarantees no duplicated elements in the return while having linear runtime 
-function select_fisher_yates(wp,files_num,tabs)
-    wp_orig = table.clone(wp)
-    local selected = {}
-    for i=1,tabs do
-        position = math.random(1,files_num)
-        -- Assign image to selected
-        selected[i] = wp[position]
-        -- Put last entry in the selected position
-        wp[position] = wp[files_num]
-        files_num = files_num - 1
-        if(files_num == 0) then
-            break
-        end
-    end
-    if not(#selected == tabs) then
-        num_left = tabs - #selected
-        subresult = select_fisher_yates(wp_orig, files_num, num_left)
-        for _, sub_v in pairs(subresult) do
-            table.insert(selected, sub_v)
-        end
-    end
-    return selected
-end
-
--- Get the names of #screen files from "num_files" total files in "path"
-function wp_selected()
-    return select_fisher_yates(scandir(path),num_files,screen.count())
-end
-
-function refresh_screen_wallpaper(s)
-    screen_index = s.index
-    -- 	Set wallpaper on first tab (else it would be empty at start up)
-    gears.wallpaper.maximized(path .. wp_selected()[screen_index], screen_index)
-end
-
-function refresh_wallpapers()
-    -- For each screen
-    for s in screen do
-        refresh_screen_wallpaper(s)
-    end
-end
-
--- Initial set
-awful.screen.connect_for_each_screen(function(s)
-    -- do something
-    refresh_screen_wallpaper(s)
-end)
-
-gears.timer {
-    timeout   = interval * 60,
-    call_now  = true,
-    autostart = true,
-    callback  = refresh_wallpapers
-}
 -- }}}
