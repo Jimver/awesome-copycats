@@ -202,7 +202,13 @@ theme.mail = lain.widget.imap({
 -- Pulsebar
 local phoneicon = wibox.widget.imagebox(theme.widget_phones)
 theme.volume = lain.widget.pulsebar({
-    ticks = true, width = dpi(67),
+    ticks = true, 
+    width = dpi(67),
+    colors = {
+             background = "#000000",
+             mute = "#e50000",
+             unmute = "#e24ad6",
+    },
     notification_preset = { font = theme.font }
 })
 theme.volume.tooltip.wibox.fg = theme.fg_focus
@@ -387,7 +393,7 @@ function theme.at_screen_connect(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(16), bg = theme.bg_normal, fg = theme.fg_normal })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -417,9 +423,9 @@ function theme.at_screen_connect(s)
             pl(binclock.widget, "#777E76"),
             --]]
             -- using separators
-            arrow(theme.bg_normal, "#343434"),
-            wibox.container.background(wibox.container.margin(wibox.widget { mailicon, theme.mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(7)), "#343434"),
-            arrow("#343434", theme.bg_normal),
+--             arrow(theme.bg_normal, "#343434"),
+--             wibox.container.background(wibox.container.margin(wibox.widget { mailicon, theme.mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(7)), "#343434"),
+--             arrow("#343434", theme.bg_normal),
 --             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
             arrow(theme.bg_normal, color[1]),
             wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), color[1]),
