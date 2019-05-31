@@ -62,6 +62,7 @@ run_once({"nm-applet"})
 run_once({"pasystray"})
 run_once({"gtk-launch jetbrains-toolbox"})
 run_once({"compton"})
+run_once({"optimus-manager-qt"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
 
