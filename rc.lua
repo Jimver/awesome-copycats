@@ -354,6 +354,7 @@ globalkeys = my_table.join(
     -- https://github.com/lcpz/dots/blob/master/bin/screenshot
 --     awful.key({ altkey }, "p", function() os.execute("screenshot") end,
 --               {description = "take a screenshot", group = "hotkeys"}),
+    
     -- Screenshots
     awful.key({ }, "Print", function() 
               awful.spawn.easy_async_with_shell("maim | xclip -selection clipboard -t image/png") end, 
@@ -389,9 +390,9 @@ globalkeys = my_table.join(
             {description = "go back", group = "tag"}),
 
     -- Non-empty tag browsing
-    awful.key({ altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end,
+    awful.key({ controlkey, altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end,
             {description = "view  previous nonempty", group = "tag"}),
-    awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end,
+    awful.key({ controlkey, altkey}, "Right", function () lain.util.tag_view_nonempty(1) end,
             {description = "view  previous nonempty", group = "tag"}),
 
     -- Default client focus
@@ -643,6 +644,9 @@ globalkeys = my_table.join(
 )
 
 clientkeys = my_table.join(
+    -- Close client
+    awful.key({ altkey }, "F4", function (c) c:kill() end,
+              {description = "close", group = "client"}),
     awful.key({ altkey, "Shift"   }, "m",      lain.util.magnify_client,
             {description = "magnify client", group = "client"}),
     awful.key({ modkey,           }, "f",
@@ -651,8 +655,6 @@ clientkeys = my_table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end,
-            {description = "close", group = "client"}),
     awful.key({ modkey, controlkey }, "space",  awful.client.floating.toggle                     ,
             {description = "toggle floating", group = "client"}),
     awful.key({ modkey, controlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
