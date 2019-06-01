@@ -357,13 +357,13 @@ globalkeys = my_table.join(
     
     -- Screenshots
     awful.key({ }, "Print", function() 
-              awful.spawn.easy_async_with_shell("maim | xclip -selection clipboard -t image/png") end, 
+              awful.spawn.with_shell("maim | xclip -selection clipboard -t image/png") end, 
               {description = "Take fullscreen screenshot", group = "hotkeys"}),
     awful.key({altkey}, "Print", function() 
-              awful.spawn.easy_async_with_shell("maim -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png") end, 
+              awful.spawn.with_shell("maim -i $(xdotool getactivewindow) | xclip -selection clipboard -t image/png") end, 
               {description = "Take screenshot of current window", group = "hotkeys"}),
     awful.key({controlkey, altkey}, "Print", function() 
-              awful.spawn.easy_async_with_shell("maim -s | xclip -selection clipboard -t image/png") end, 
+              awful.spawn.with_shell("maim -s | xclip -selection clipboard -t image/png") end, 
               {description = "Take selection screenshot", group = "hotkeys"}),
     
     -- Refresh wallpapers
@@ -371,7 +371,7 @@ globalkeys = my_table.join(
             {description = "refresh wallpapers", group = "screen"}),
     
     -- Rofi menu
-    awful.key({ modkey}, "d", function() awful.spawn.easy_async_with_shell("rofi -show combi") end, 
+    awful.key({ modkey}, "d", function() awful.spawn.with_shell("rofi -show combi") end, 
             {description = "rofi launcher", group = "launcher"}),
 
     -- X screen locker
