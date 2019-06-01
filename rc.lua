@@ -60,7 +60,7 @@ end
 run_once({"blueman-applet"})
 run_once({"nm-applet"})
 run_once({"pasystray"})
-run_once({"gtk-launch jetbrains-toolbox"})
+-- run_once({"gtk-launch jetbrains-toolbox"})
 run_once({"compton"})
 run_once({"optimus-manager-qt"})
 
