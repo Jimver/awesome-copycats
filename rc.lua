@@ -205,6 +205,14 @@ local myawesomemenu = {
     { "restart", awesome.restart },
     { "quit", function() awesome.quit() end }
 }
+
+local mysystemmenu = {
+    { "Logout", function() awesome.quit() end },
+    {"Suspend", function() awful.spawn("systemctl suspend") end },
+    {"Reboot", function() awful.spawn("reboot") end },
+    {"Shutdown", function() awful.spawn("shutdown now") end }
+}
+
 awful.util.mymainmenu = freedesktop.menu.build({
     icon_size = beautiful.menu_height or dpi(16),
     before = {
@@ -213,6 +221,7 @@ awful.util.mymainmenu = freedesktop.menu.build({
     },
     after = {
         { "Open terminal", terminal },
+        { "System", mysystemmenu }
         -- other triads can be put here
     }
 })
