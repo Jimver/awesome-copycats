@@ -323,7 +323,7 @@ myredshift = wibox.widget.textbox()
 lain.widget.contrib.redshift:attach(
     myredshift,
     function (active)
-        if active then
+        if not active then
             myredshift:set_text("RS on")
         else
             myredshift:set_text("RS off")
