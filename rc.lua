@@ -478,9 +478,9 @@ globalkeys = my_table.join(
         {description = "toggle wibox", group = "awesome"}),
 
     -- On the fly useless gaps change
-    awful.key({ altkey, controlkey }, "=", function () beautiful.useless_gap =  beautiful.useless_gap + 1 end,
+    awful.key({ altkey, controlkey }, "=", function () beautiful.useless_gap =  math.min(beautiful.useless_gap + 1, 100) end,
             {description = "increment useless gaps", group = "tag"}),
-    awful.key({ altkey, controlkey }, "-", function () beautiful.useless_gap =  beautiful.useless_gap - 1 end,
+    awful.key({ altkey, controlkey }, "-", function () beautiful.useless_gap =  math.max(beautiful.useless_gap - 1, 0) end,
             {description = "decrement useless gaps", group = "tag"}),
 
     -- Dynamic tagging

@@ -14,7 +14,6 @@ local dpi   = require("beautiful.xresources").apply_dpi
 
 local math, string, os = math, string, os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
-
 local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow"
 theme.wallpaper                                 = theme.dir .. "/wall.png"
@@ -22,18 +21,19 @@ theme.font                                      = "Roboto 9"
 theme.fg_normal                                 = "#FEFEFE"
 theme.fg_focus                                  = "#ff47ca"
 theme.fg_urgent                                 = "#C83F11"
+theme.bg_orig                                       = "#222222"
 theme.bg_normal                                 = "#222222"  .. "CC"
-theme.bg_focus                                  = "#1E2320"
-theme.bg_urgent                                 = "#3F3F3F"
+theme.bg_focus                                  = "#1E2320" .. "CC"
+theme.bg_urgent                                 = "#3F3F3F"  .. "CC"
 theme.taglist_fg_focus                          = theme.fg_focus
-theme.tasklist_bg_focus                         = "#222222"
+theme.taglist_bg_focus                          = theme.bg_normal .. "00" -- Use full transparency because this color goes on top of bg_normal
+theme.tasklist_bg_focus                         = theme.bg_normal .. "00"
+theme.tasklist_bg_normal                         = theme.bg_normal .. "00" -- Use full transparency because this color goes on top of bg_normal
 theme.tasklist_fg_focus                         = theme.fg_focus
 theme.border_width                              = dpi(2)
 theme.border_normal                             = "#3F3F3F"
 theme.border_focus                              = "#8d5a97"
 theme.border_marked                             = "#CC9393"
-theme.titlebar_bg_focus                         = "#3F3F3F"
-theme.titlebar_bg_normal                        = "#3F3F3F"
 theme.titlebar_bg_focus                         = theme.bg_focus
 theme.titlebar_bg_normal                        = theme.bg_normal
 theme.titlebar_fg_focus                         = theme.fg_focus
@@ -80,7 +80,7 @@ theme.widget_scissors                           = theme.dir .. "/icons/scissors.
 theme.widget_phones                           = theme.dir .. "/icons/phones.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
-theme.useless_gap                               = 0
+theme.useless_gap                               = 5
 theme.titlebar_close_button_focus               = theme.dir .. "/icons/titlebar/close_focus.png"
 theme.titlebar_close_button_normal              = theme.dir .. "/icons/titlebar/close_normal.png"
 theme.titlebar_ontop_button_focus_active        = theme.dir .. "/icons/titlebar/ontop_focus_active.png"
@@ -99,7 +99,6 @@ theme.titlebar_maximized_button_focus_active    = theme.dir .. "/icons/titlebar/
 theme.titlebar_maximized_button_normal_active   = theme.dir .. "/icons/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_inactive  = theme.dir .. "/icons/titlebar/maximized_focus_inactive.png"
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
-
 beautiful.bg_systray = theme.bg_normal
 
 local color = {"#BF7DBE","#783DD9","#7B0288","#331188","#92A6DE","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
@@ -336,7 +335,7 @@ local brighticon = wibox.widget.imagebox(theme.widget_brightness)
 -- If you use xbacklight, comment the line with "light -G" and uncomment the line bellow
 -- local brightwidget = awful.widget.watch('xbacklight -get', 0.1,
 
-local brightwidget = awful.widget.watch('light -G', 0.1,
+local brightwidget = awful.widget.watch('light -G', 0.5,
     function(widget, stdout, stderr, exitreason, exitcode)
         local brightness_level = tonumber(string.format("%.0f", stdout))
         widget:set_markup(markup.font(theme.font, " " .. brightness_level .. "%"))
@@ -401,15 +400,31 @@ function theme.at_screen_connect(s)
                            awful.button({}, 3, function () awful.layout.inc(-1) end),
                            awful.button({}, 4, function () awful.layout.inc( 1) end),
                            awful.button({}, 5, function () awful.layout.inc(-1) end)))
-    -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, awful.util.taglist_buttons)
+    tagargs = {}
+    tagargs.screen = s
+    tagargs.filter = awful.widget.taglist.filter.all
+    tagargs.buttons = awful.util.taglist_buttons
+--     tagargs.style = {}
+--     tagargs.style.bg_focus = "#222222"  .. "00"
+--     tagargs.style.bg_occupied = "#222222"  .. "00"
+--     tagargs.style.bg_urgent = "#222222"  .. "00"
+--     tagargs.style.bg_volatile = "#222222"  .. "00"
+--     tagargs.style.bg_empty = "#222222"  .. "00"
+        
+        -- Create a taglist widget
+    s.mytaglist = awful.widget.taglist(tagargs)
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
-
+    
+    -- Set the opacity of the systray
+    systray = wibox.widget.systray()
+    systray.opacity = 0.9
+    
+    
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
@@ -423,7 +438,6 @@ function theme.at_screen_connect(s)
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
             wibox.container.margin(scissors, dpi(4), dpi(8)),
             --[[ using shapes
             pl(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, "#343434"),
@@ -442,7 +456,7 @@ function theme.at_screen_connect(s)
 --             wibox.container.background(wibox.container.margin(wibox.widget { mailicon, theme.mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(7)), "#343434"),
 --             arrow("#343434", theme.bg_normal),
 --             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
-            arrow(theme.bg_normal, color[1]),
+            arrow(theme.bg_orig .. "00", color[1] .. "00"),
             wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), color[1]),
             arrow(color[1], color[2]),
             wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volumewidget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), color[2]),
@@ -467,6 +481,7 @@ function theme.at_screen_connect(s)
             arrow(color[11], "alpha"),
             --]]
             s.mylayoutbox,
+            systray,
         },
     }
 end
