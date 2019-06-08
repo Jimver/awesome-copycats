@@ -79,7 +79,6 @@ awful.spawn.with_shell(
 -- }}}
 
 -- {{{ Variable definitions
-
 local themes = {
     "blackburn",       -- 1
     "copland",         -- 2
@@ -92,7 +91,6 @@ local themes = {
     "steamburn",       -- 9
     "vertex",          -- 10
 }
-
 local chosen_theme = themes[6]
 local modkey       = "Mod4"
 local altkey       = "Mod1"
