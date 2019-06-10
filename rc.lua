@@ -364,6 +364,9 @@ globalkeys = my_table.join(
     -- https://github.com/lcpz/dots/blob/master/bin/screenshot
 --     awful.key({ altkey }, "p", function() os.execute("screenshot") end,
 --               {description = "take a screenshot", group = "hotkeys"}),
+    -- Tdrop toggle
+    awful.key({}, "F12", function() 
+              awful.spawn.with_shell("tdrop -a -w 90% -x 5% alacritty") end),
     
     -- Screenshots
     awful.key({ }, "Print", function() 
