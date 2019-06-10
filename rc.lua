@@ -63,6 +63,9 @@ run_once({"pasystray"})
 -- run_once({"gtk-launch jetbrains-toolbox"})
 run_once({"compton"})
 run_once({"optimus-manager-qt"})
+run_once({"libinput-gestures-setup start"})
+run_once({"mate-power-manager"})
+run_once({"octopi-notifier"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
 
