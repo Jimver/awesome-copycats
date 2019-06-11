@@ -66,6 +66,7 @@ run_once({"optimus-manager-qt"})
 run_once({"libinput-gestures-setup start"})
 run_once({"mate-power-manager"})
 run_once({"octopi-notifier"})
+run_once({"nvidia-settings --load-config-only"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
 
@@ -366,7 +367,7 @@ globalkeys = my_table.join(
 --               {description = "take a screenshot", group = "hotkeys"}),
     -- Tdrop toggle
     awful.key({}, "F12", function() 
-              awful.spawn.with_shell("tdrop -a -w 90% -x 5% alacritty") end),
+              awful.spawn.with_shell("tdrop -a -m -w 90% -x 5% alacritty") end),
     
     -- Screenshots
     awful.key({ }, "Print", function() 
@@ -789,8 +790,8 @@ awful.rules.rules = {
     properties = { titlebars_enabled = true } },
 
     -- Set Firefox to always map on the first tag on screen 1.
-    { rule = { class = "Firefox" },
-    properties = { screen = 1, tag = awful.util.tagnames[1] } },
+    -- { rule = { class = "Firefox" },
+    -- properties = { screen = 1, tag = awful.util.tagnames[1] } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
         properties = { maximized = true } },
