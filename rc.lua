@@ -68,6 +68,7 @@ run_once({"libinput-gestures-setup start"})
 -- run_once({"octopi-notifier"})
 run_once({"nvidia-settings --load-config-only"})
 run_once({"dex -a"})
+run_once({"fusuma"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
 
