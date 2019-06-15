@@ -57,16 +57,17 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({"blueman-applet"})
-run_once({"nm-applet"})
-run_once({"pasystray"})
+-- run_once({"blueman-applet"})
+-- run_once({"nm-applet"})
+-- run_once({"pasystray"})
 -- run_once({"gtk-launch jetbrains-toolbox"})
-run_once({"compton"})
+-- run_once({"compton"})
 run_once({"optimus-manager-qt"})
 run_once({"libinput-gestures-setup start"})
-run_once({"mate-power-manager"})
-run_once({"octopi-notifier"})
+-- run_once({"mate-power-manager"})
+-- run_once({"octopi-notifier"})
 run_once({"nvidia-settings --load-config-only"})
+run_once({"dex -a"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
 
