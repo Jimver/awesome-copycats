@@ -317,19 +317,6 @@ local net = lain.widget.net({
     end
 })
 
--- Redshift
-myredshift = wibox.widget.textbox()
-lain.widget.contrib.redshift:attach(
-    myredshift,
-    function (active)
-        if not active then
-            myredshift:set_text("RS on")
-        else
-            myredshift:set_text("RS off")
-        end
-    end
-)
-
 -- Brigtness
 local brighticon = wibox.widget.imagebox(theme.widget_brightness)
 -- If you use xbacklight, comment the line with "light -G" and uncomment the line bellow
@@ -472,9 +459,9 @@ function theme.at_screen_connect(s)
             wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[7]),
             arrow(color[7], color[8]),
             wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[8]),
-            arrow(color[8], color[9]),
-            wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[9]),
-            arrow(color[9], color[10]),
+--             arrow(color[8], color[9]),
+--             wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[9]),
+            arrow(color[8], color[10]),
             wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[10]),
             arrow(color[10], color[11]),
             wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), color[11]),
