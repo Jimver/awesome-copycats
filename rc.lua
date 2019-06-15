@@ -101,6 +101,8 @@ local chosen_theme = themes[6]
 local modkey       = "Mod4"
 local altkey       = "Mod1"
 local controlkey = "Control"
+local shiftkey = "Shift"
+local escapekey = "Escape"
 local terminal     = "alacritty"
 local editor       = os.getenv("EDITOR") or "nano"
 local gui_editor   = "kate"
@@ -367,6 +369,10 @@ globalkeys = my_table.join(
     -- https://github.com/lcpz/dots/blob/master/bin/screenshot
 --     awful.key({ altkey }, "p", function() os.execute("screenshot") end,
 --               {description = "take a screenshot", group = "hotkeys"}),
+    -- Gnome System Monitor shortcut
+    awful.key({controlkey, shiftkey}, "Escape", function()
+              awful.spawn.with_shell("gnome-system-monitor") end),
+    
     -- Tdrop toggle
     awful.key({}, "F12", function() 
               awful.spawn.with_shell("tdrop -a -m -w 90% -x 5% alacritty") end),
@@ -454,9 +460,9 @@ globalkeys = my_table.join(
             {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
+    awful.key({ modkey, shiftkey   }, "j", function () awful.client.swap.byidx(  1)    end,
             {description = "swap with next client by index", group = "client"}),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end,
+    awful.key({ modkey, shiftkey   }, "k", function () awful.client.swap.byidx( -1)    end,
             {description = "swap with previous client by index", group = "client"}),
     awful.key({ modkey, controlkey }, "j", function () awful.screen.focus_relative( 1) end,
             {description = "focus the next screen", group = "screen"}),
@@ -491,15 +497,15 @@ globalkeys = my_table.join(
             {description = "decrement useless gaps", group = "tag"}),
 
     -- Dynamic tagging
-    awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end,
+    awful.key({ modkey, shiftkey }, "n", function () lain.util.add_tag() end,
             {description = "add new tag", group = "tag"}),
-    awful.key({ modkey, "Shift" }, "r", function () lain.util.rename_tag() end,
+    awful.key({ modkey, shiftkey }, "r", function () lain.util.rename_tag() end,
             {description = "rename tag", group = "tag"}),
-    awful.key({ modkey, "Shift" }, "Left", function () lain.util.move_tag(-1) end,
+    awful.key({ modkey, shiftkey }, "Left", function () lain.util.move_tag(-1) end,
             {description = "move tag to the left", group = "tag"}),
-    awful.key({ modkey, "Shift" }, "Right", function () lain.util.move_tag(1) end,
+    awful.key({ modkey, shiftkey }, "Right", function () lain.util.move_tag(1) end,
             {description = "move tag to the right", group = "tag"}),
-    awful.key({ modkey, "Shift" }, "d", function () lain.util.delete_tag() end,
+    awful.key({ modkey, shiftkey }, "d", function () lain.util.delete_tag() end,
             {description = "delete tag", group = "tag"}),
 
     -- Standard program
@@ -507,16 +513,16 @@ globalkeys = my_table.join(
             {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, controlkey }, "r", awesome.restart,
             {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
+    awful.key({ modkey, shiftkey   }, "q", awesome.quit,
             {description = "quit awesome", group = "awesome"}),
 
-    awful.key({ altkey, "Shift"   }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ altkey, shiftkey   }, "l",     function () awful.tag.incmwfact( 0.05)          end,
             {description = "increase master width factor", group = "layout"}),
-    awful.key({ altkey, "Shift"   }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ altkey, shiftkey   }, "h",     function () awful.tag.incmwfact(-0.05)          end,
             {description = "decrease master width factor", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
+    awful.key({ modkey, shiftkey   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
             {description = "increase the number of master clients", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
+    awful.key({ modkey, shiftkey   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
             {description = "decrease the number of master clients", group = "layout"}),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
             {description = "increase the number of columns", group = "layout"}),
@@ -524,7 +530,7 @@ globalkeys = my_table.join(
             {description = "decrease the number of columns", group = "layout"}),
     awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
             {description = "select next", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
+    awful.key({ modkey, shiftkey   }, "space", function () awful.layout.inc(-1)                end,
             {description = "select previous", group = "layout"}),
 
     awful.key({ modkey, controlkey }, "n",
@@ -663,7 +669,7 @@ clientkeys = my_table.join(
     -- Close client
     awful.key({ altkey }, "F4", function (c) c:kill() end,
               {description = "close", group = "client"}),
-    awful.key({ altkey, "Shift"   }, "m",      lain.util.magnify_client,
+    awful.key({ altkey, shiftkey   }, "m",      lain.util.magnify_client,
             {description = "magnify client", group = "client"}),
     awful.key({ modkey,           }, "f",
         function (c)
@@ -728,7 +734,7 @@ for i = 1, 9 do
                 end,
                 descr_toggle),
         -- Move client to tag.
-        awful.key({ modkey, "Shift" }, "#" .. i + 9,
+        awful.key({ modkey, shiftkey }, "#" .. i + 9,
                 function ()
                     if client.focus then
                         local tag = client.focus.screen.tags[i]
@@ -739,7 +745,7 @@ for i = 1, 9 do
                 end,
                 descr_move),
         -- Toggle tag on focused client.
-        awful.key({ modkey, controlkey, "Shift" }, "#" .. i + 9,
+        awful.key({ modkey, controlkey, shiftkey }, "#" .. i + 9,
                 function ()
                     if client.focus then
                         local tag = client.focus.screen.tags[i]
