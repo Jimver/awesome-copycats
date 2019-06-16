@@ -69,8 +69,15 @@ run_once({"optimus-manager-qt"})
 run_once({"nvidia-settings --load-config-only"})
 run_once({"fusuma"})
 run_once({"dex -a"})
+run_once({"systemctl --user import-environment PATH DBUS_SESSION_BUS_ADDRESS"})
+run_once({"systemctl --no-block --user start xsession.target"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
+
+function logout()
+    run_once({"systemctl --no-block --user stop xsession.target"})
+    awesome.quit()
+end
 
 -- This function implements the XDG autostart specification
 --[[
@@ -209,11 +216,11 @@ local myawesomemenu = {
     { "manual", terminal .. " -e man awesome" },
     { "edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) },
     { "restart", awesome.restart },
-    { "quit", function() awesome.quit() end }
+    { "quit", logout }
 }
 
 local mysystemmenu = {
-    { "Logout", function() awesome.quit() end },
+    { "Logout", logout },
     {"Suspend", function() awful.spawn("systemctl suspend") end },
     {"Reboot", function() awful.spawn("reboot") end },
     {"Shutdown", function() awful.spawn("shutdown now") end }
@@ -513,7 +520,7 @@ globalkeys = my_table.join(
             {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, controlkey }, "r", awesome.restart,
             {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, shiftkey   }, "q", awesome.quit,
+    awful.key({ modkey, shiftkey   }, "q", logout,
             {description = "quit awesome", group = "awesome"}),
 
     awful.key({ altkey, shiftkey   }, "l",     function () awful.tag.incmwfact( 0.05)          end,
