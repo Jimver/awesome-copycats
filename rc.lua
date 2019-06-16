@@ -64,10 +64,10 @@ end
 -- run_once({"compton"})
 -- run_once({"mate-power-manager"})
 -- run_once({"octopi-notifier"})
+-- run_once({"redshift-gtk"})
 run_once({"optimus-manager-qt"})
 run_once({"nvidia-settings --load-config-only"})
 run_once({"fusuma"})
-run_once({"redshift-gtk"})
 run_once({"dex -a"})
 
 -- run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
