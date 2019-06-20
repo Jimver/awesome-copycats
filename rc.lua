@@ -64,11 +64,10 @@ end
 -- run_once({"mate-power-manager"})
 -- run_once({"octopi-notifier"})
 -- run_once({"redshift-gtk"})
-run_once({"optimus-manager-qt"})
 run_once({"nvidia-settings --load-config-only"})
 run_once({"fusuma"})
 run_once({"compton"})
-run_once({"dex -a"})
+run_once({"dex -a -s /etc/xdg/autostart/:~/.config/autostart/"})
 run_once({"systemctl --user import-environment PATH DBUS_SESSION_BUS_ADDRESS"})
 run_once({"systemctl --no-block --user start xsession.target"})
 
