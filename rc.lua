@@ -798,6 +798,13 @@ awful.rules.rules = {
                     size_hints_honor = false
     }
     },
+    
+    -- No tiling rule
+    { rule_any =  {
+                   class = {"pavucontrol", "Pavucontrol", "odrive", "blueman-manager", "Blueman-manager"}, 
+                   name = {"Volume Control"},
+                   instance = {}}, 
+      properties = { floating = true }},
 
     -- Titlebars
     { rule_any = { type = { "dialog", "normal" } },
