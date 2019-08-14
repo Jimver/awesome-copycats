@@ -396,7 +396,7 @@ globalkeys = my_table.join(
     
     -- Refresh wallpapers
     awful.key({ modkey}, "t", refresh_wallpapers, 
-            {description = "refresh wallpapers", group = "screen"}),
+            {description = "refresh wallpapers", group = "awesome"}),
     
     -- Rofi menu
     awful.key({ modkey}, "d", function() awful.spawn.with_shell("rofi -show combi") end, 
@@ -701,7 +701,7 @@ clientkeys = my_table.join(
             {description = "move to master", group = "client"}),
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
             {description = "move to screen", group = "client"}),
-    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
+    awful.key({ modkey,           }, "y",      function (c) c.ontop = not c.ontop            end,
             {description = "toggle keep on top", group = "client"}),
     awful.key({ modkey,           }, "n",
         function (c)
