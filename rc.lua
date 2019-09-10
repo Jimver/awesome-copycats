@@ -14,6 +14,7 @@ local awful         = require("awful")
 require("awful.autofocus")
 local wibox         = require("wibox")
 local beautiful     = require("beautiful")
+local xresources     = require("beautiful.xresources")
 local naughty       = require("naughty")
 local lain          = require("lain")
 --local menubar       = require("menubar")
@@ -68,6 +69,7 @@ run_once({"nvidia-settings --load-config-only"})
 run_once({"fusuma"})
 run_once({"compton --experimental-backends"})
 run_once({"dex -a -s /etc/xdg/autostart/:~/.config/autostart/"})
+run_once({"seafile-applet"})
 run_once({"systemctl --user import-environment PATH DBUS_SESSION_BUS_ADDRESS"})
 run_once({"systemctl --no-block --user start xsession.target"})
 
@@ -115,6 +117,7 @@ local gui_editor   = "kate"
 local browser      = "firefox"
 local guieditor    = "kate"
 local scrlocker    = "i3lock-fancy-rapid 7 3"
+
 
 awful.util.terminal = terminal
 awful.util.tagnames = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }
@@ -337,6 +340,94 @@ function select_fisher_yates(wp,files_num,tabs)
     return selected
 end
 
+function print_table(node)
+    -- to make output beautiful
+    local function tab(amt)
+        local str = ""
+        for i=1,amt do
+            str = str .. "\t"
+        end
+        return str
+    end
+
+    local cache, stack, output = {},{},{}
+    local depth = 1
+    local output_str = "{\n"
+
+    while true do
+        local size = 0
+        for k,v in pairs(node) do
+            size = size + 1
+        end
+
+        local cur_index = 1
+        for k,v in pairs(node) do
+            if (cache[node] == nil) or (cur_index >= cache[node]) then
+
+                if (string.find(output_str,"}",output_str:len())) then
+                    output_str = output_str .. ",\n"
+                elseif not (string.find(output_str,"\n",output_str:len())) then
+                    output_str = output_str .. "\n"
+                end
+
+                -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
+                table.insert(output,output_str)
+                output_str = ""
+
+                local key
+                if (type(k) == "number" or type(k) == "boolean") then
+                    key = "["..tostring(k).."]"
+                else
+                    key = "['"..tostring(k).."']"
+                end
+
+                if (type(v) == "number" or type(v) == "boolean") then
+                    output_str = output_str .. tab(depth) .. key .. " = "..tostring(v)
+                elseif (type(v) == "table") then
+                    output_str = output_str .. tab(depth) .. key .. " = {\n"
+                    table.insert(stack,node)
+                    table.insert(stack,v)
+                    cache[node] = cur_index+1
+                    break
+                else
+                    output_str = output_str .. tab(depth) .. key .. " = '"..tostring(v).."'"
+                end
+
+                if (cur_index == size) then
+                    output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+                else
+                    output_str = output_str .. ","
+                end
+            else
+                -- close the table
+                if (cur_index == size) then
+                    output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+                end
+            end
+
+            cur_index = cur_index + 1
+        end
+
+        if (size == 0) then
+            output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+        end
+
+        if (#stack > 0) then
+            node = stack[#stack]
+            stack[#stack] = nil
+            depth = cache[node] == nil and depth + 1 or depth - 1
+        else
+            break
+        end
+    end
+
+    -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
+    table.insert(output,output_str)
+    output_str = table.concat(output)
+
+    print(output_str)
+end
+
 -- Get the names of #screen files from "num_files" total files in "path"
 function wp_selected()
     return select_fisher_yates(scandir(path),num_files,screen.count())
@@ -349,10 +440,16 @@ function refresh_screen_wallpaper(s)
 end
 
 function refresh_wallpapers()
-    -- For each screen
-    for s in screen do
-        refresh_screen_wallpaper(s)
-    end
+    awful.spawn.easy_async_with_shell("wal -q -i " .. path, function() 
+        local beautiful_theme = beautiful.get()
+        beautiful_theme.update_colors(0, 15, beautiful_theme, function()
+--          For each screen
+            for s in screen do
+                beautiful_theme.update_wibox(s)
+            end
+--          refresh_screen_wallpaper(s)
+        end)
+    end)
 end
 
 -- Initial set

@@ -10,6 +10,7 @@ local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local xresources = require("beautiful.xresources")
 local dpi   = require("beautiful.xresources").apply_dpi
 
 local math, string, os = math, string, os
@@ -101,7 +102,22 @@ theme.titlebar_maximized_button_focus_inactive  = theme.dir .. "/icons/titlebar/
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
 beautiful.bg_systray = theme.bg_normal
 
-local color = {"#BF7DBE","#783DD9","#7B0288","#331188","#92A6DE","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
+theme.color = {"#BF7DBE","#783DD9","#7B0288","#331188","#92A6DE","#AAAADD","#665577","#b3cbb9","#648381","#395b50","#1f2f16"}
+
+function theme.update_colors(i, max, b_theme, callback)
+    if i<=max then
+        local query = "xrdb -query | grep \"*color" .. i .. ":\" | cut -f 2"
+        awful.spawn.easy_async_with_shell(query, function(out) 
+            local stripped = string.gsub(out, "\n", "")
+            b_theme['color'][i] = stripped
+            theme.update_colors(i+1, max, b_theme, callback)
+        end)
+    else
+         callback()
+    end
+end
+
+theme.update_colors(0, 15, theme, function() end)
 
 local markup = lain.util.markup
 local separators = lain.util.separators
@@ -362,48 +378,11 @@ local function pl(widget, bgcolor, padding)
     return wibox.container.background(wibox.container.margin(widget, dpi(16), dpi(16)), bgcolor, theme.powerline_rl)
 end
 
-function theme.at_screen_connect(s)
-    -- Quake application
-    s.quake = lain.util.quake({ app = awful.util.terminal })
-
-    -- If wallpaper is a function, call it with the screen
---     local wallpaper = theme.wallpaper
---     if type(wallpaper) == "function" then
---         wallpaper = wallpaper(s)
---     end
---     gears.wallpaper.maximized(wallpaper, s, true)
-
-    -- Tags
-    awful.tag(awful.util.tagnames, s, awful.layout.layouts[1])
-
-    -- Create a promptbox for each screen
-    s.mypromptbox = awful.widget.prompt()
-    -- Create an imagebox widget which will contains an icon indicating which layout we're using.
-    -- We need one layoutbox per screen.
-    s.mylayoutbox = awful.widget.layoutbox(s)
-    s.mylayoutbox:buttons(my_table.join(
-                           awful.button({}, 1, function () awful.layout.inc( 1) end),
-                           awful.button({}, 2, function () awful.layout.set( awful.layout.layouts[1] ) end),
-                           awful.button({}, 3, function () awful.layout.inc(-1) end),
-                           awful.button({}, 4, function () awful.layout.inc( 1) end),
-                           awful.button({}, 5, function () awful.layout.inc(-1) end)))
-    tagargs = {}
-    tagargs.screen = s
-    tagargs.filter = awful.widget.taglist.filter.all
-    tagargs.buttons = awful.util.taglist_buttons
---     tagargs.style = {}
---     tagargs.style.bg_focus = "#222222"  .. "00"
---     tagargs.style.bg_occupied = "#222222"  .. "00"
---     tagargs.style.bg_urgent = "#222222"  .. "00"
---     tagargs.style.bg_volatile = "#222222"  .. "00"
---     tagargs.style.bg_empty = "#222222"  .. "00"
-        
-        -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist(tagargs)
-
-    -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
-
+function theme.update_wibox(s)
+    -- Remove old wibox if exists
+    if s.mywibox then s.mywibox:remove() end
+    --print("Update wibox")
+    --print_table(theme.color)
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
     
@@ -443,34 +422,171 @@ function theme.at_screen_connect(s)
 --             wibox.container.background(wibox.container.margin(wibox.widget { mailicon, theme.mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(7)), "#343434"),
 --             arrow("#343434", theme.bg_normal),
 --             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
-            arrow(theme.bg_orig .. "00", color[1] .. "00"),
-            wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), color[1]),
-            arrow(color[1], color[2]),
-            wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volumewidget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), color[2]),
-            arrow(color[2], color[3]),
-            wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), color[3]),
-            arrow(color[3], color[4]),
-            wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), color[4]),
-            arrow(color[4], color[5]),
-            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), color[5]),
-            arrow(color[5], color[6]),
-            wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[6]),
-            arrow(color[6], color[7]),
-            wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[7]),
-            arrow(color[7], color[8]),
-            wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[8]),
---             arrow(color[8], color[9]),
---             wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[9]),
-            arrow(color[8], color[10]),
-            wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), color[10]),
-            arrow(color[10], color[11]),
-            wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), color[11]),
-            arrow(color[11], "alpha"),
+            arrow(theme.bg_orig .. "00", theme.color[1] .. "00"),
+            wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), theme.color[1]),
+            arrow(theme.color[1], theme.color[2]),
+            wibox.container.background(wibox.container.margin(wibox.widget { phoneicon, volumewidget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), theme.color[2]),
+            arrow(theme.color[2], theme.color[3]),
+            wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), theme.color[3]),
+            arrow(theme.color[3], theme.color[4]),
+            wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), theme.color[4]),
+            arrow(theme.color[4], theme.color[5]),
+            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), theme.color[5]),
+            arrow(theme.color[5], theme.color[6]),
+            wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), theme.color[6]),
+            arrow(theme.color[6], theme.color[7]),
+            wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), theme.color[7]),
+            arrow(theme.color[7], theme.color[8]),
+            wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), theme.color[8]),
+--             arrow(theme.color[8], theme.color[9]),
+--             wibox.container.background(wibox.container.margin(wibox.widget { nil, myredshift, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), theme.color[9]),
+            arrow(theme.color[8], theme.color[10]),
+            wibox.container.background(wibox.container.margin(wibox.widget { brighticon, brightwidget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), theme.color[10]),
+            arrow(theme.color[10], theme.color[11]),
+            wibox.container.background(wibox.container.margin(mytextclock, dpi(4), dpi(8)), theme.color[11]),
+            arrow(theme.color[11], "alpha"),
             --]]
             s.mylayoutbox,
             systray,
         },
     }
+end
+
+function theme.at_screen_connect(s)
+--     if s.quake then s.quake:remove() end
+    -- Quake application
+    s.quake = lain.util.quake({ app = awful.util.terminal })
+
+    -- If wallpaper is a function, call it with the screen
+--     local wallpaper = theme.wallpaper
+--     if type(wallpaper) == "function" then
+--         wallpaper = wallpaper(s)
+--     end
+--     gears.wallpaper.maximized(wallpaper, s, true)
+
+    -- Tags
+    awful.tag(awful.util.tagnames, s, awful.layout.layouts[1])
+
+--     if s.mypromptbox then s.mypromptbox:remove() end
+    -- Create a promptbox for each screen
+    s.mypromptbox = awful.widget.prompt()
+    
+    -- Create an imagebox widget which will contains an icon indicating which layout we're using.
+    -- We need one layoutbox per screen.
+    s.mylayoutbox = awful.widget.layoutbox(s)
+    s.mylayoutbox:buttons(my_table.join(
+                           awful.button({}, 1, function () awful.layout.inc( 1) end),
+                           awful.button({}, 2, function () awful.layout.set( awful.layout.layouts[1] ) end),
+                           awful.button({}, 3, function () awful.layout.inc(-1) end),
+                           awful.button({}, 4, function () awful.layout.inc( 1) end),
+                           awful.button({}, 5, function () awful.layout.inc(-1) end)))
+    tagargs = {}
+    tagargs.screen = s
+    tagargs.filter = awful.widget.taglist.filter.all
+    tagargs.buttons = awful.util.taglist_buttons
+--     tagargs.style = {}
+--     tagargs.style.bg_focus = "#222222"  .. "00"
+--     tagargs.style.bg_occupied = "#222222"  .. "00"
+--     tagargs.style.bg_urgent = "#222222"  .. "00"
+--     tagargs.style.bg_volatile = "#222222"  .. "00"
+--     tagargs.style.bg_empty = "#222222"  .. "00"
+    
+        -- Create a taglist widget
+    s.mytaglist = awful.widget.taglist(tagargs)
+
+    -- Create a tasklist widget
+    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
+    theme.update_colors(0, 15, theme, function() 
+        theme.update_wibox(s)
+    end)
+end
+
+function print_table(node)
+    -- to make output beautiful
+    local function tab(amt)
+        local str = ""
+        for i=1,amt do
+            str = str .. "\t"
+        end
+        return str
+    end
+
+    local cache, stack, output = {},{},{}
+    local depth = 1
+    local output_str = "{\n"
+
+    while true do
+        local size = 0
+        for k,v in pairs(node) do
+            size = size + 1
+        end
+
+        local cur_index = 1
+        for k,v in pairs(node) do
+            if (cache[node] == nil) or (cur_index >= cache[node]) then
+
+                if (string.find(output_str,"}",output_str:len())) then
+                    output_str = output_str .. ",\n"
+                elseif not (string.find(output_str,"\n",output_str:len())) then
+                    output_str = output_str .. "\n"
+                end
+
+                -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
+                table.insert(output,output_str)
+                output_str = ""
+
+                local key
+                if (type(k) == "number" or type(k) == "boolean") then
+                    key = "["..tostring(k).."]"
+                else
+                    key = "['"..tostring(k).."']"
+                end
+
+                if (type(v) == "number" or type(v) == "boolean") then
+                    output_str = output_str .. tab(depth) .. key .. " = "..tostring(v)
+                elseif (type(v) == "table") then
+                    output_str = output_str .. tab(depth) .. key .. " = {\n"
+                    table.insert(stack,node)
+                    table.insert(stack,v)
+                    cache[node] = cur_index+1
+                    break
+                else
+                    output_str = output_str .. tab(depth) .. key .. " = '"..tostring(v).."'"
+                end
+
+                if (cur_index == size) then
+                    output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+                else
+                    output_str = output_str .. ","
+                end
+            else
+                -- close the table
+                if (cur_index == size) then
+                    output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+                end
+            end
+
+            cur_index = cur_index + 1
+        end
+
+        if (size == 0) then
+            output_str = output_str .. "\n" .. tab(depth-1) .. "}"
+        end
+
+        if (#stack > 0) then
+            node = stack[#stack]
+            stack[#stack] = nil
+            depth = cache[node] == nil and depth + 1 or depth - 1
+        else
+            break
+        end
+    end
+
+    -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
+    table.insert(output,output_str)
+    output_str = table.concat(output)
+
+    print(output_str)
 end
 
 return theme
