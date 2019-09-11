@@ -456,6 +456,7 @@ end
 awful.screen.connect_for_each_screen(function(s)
     -- do something
     -- refresh_screen_wallpaper(s)
+    refresh_wallpapers()
 end)
 
 gears.timer {
