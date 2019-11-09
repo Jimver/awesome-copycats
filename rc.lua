@@ -67,7 +67,7 @@ end
 -- run_once({"redshift-gtk"})
 run_once({"nvidia-settings --load-config-only"})
 run_once({"fusuma"})
-run_once({"compton --experimental-backends"})
+-- run_once({"compton --experimental-backends"})
 run_once({"dex -a -s /etc/xdg/autostart/:~/.config/autostart/"})
 run_once({"seafile-applet"})
 run_once({"systemctl --user import-environment PATH DBUS_SESSION_BUS_ADDRESS"})
